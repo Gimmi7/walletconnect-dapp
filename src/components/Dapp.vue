@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { reactive, inject, onMounted } from "vue"
+import { reactive, onMounted } from "vue"
 import WalletConnect from '@walletconnect/client/dist/umd/index.min.js'
 import QRCodeModal from '@walletconnect/qrcode-modal'
-import { Message } from 'element-plus/es/components/message'
+import {ElMessage} from 'element-plus'
 
 localStorage.clear()
 onMounted(() => {
 })
-const $message: Message = inject('$message')!
+
 const data = reactive({
   connected: false,
   uri: '',
@@ -30,7 +30,7 @@ const connector = new WalletConnect(
 connector.on('connect', (err, payload) => {
   if (err) {
     console.log('connect err=', err)
-    $message.error('connect err')
+    ElMessage.error('connect err')
     return
   }
   const { accounts, chainId } = payload.params[0]
@@ -38,21 +38,21 @@ connector.on('connect', (err, payload) => {
   data.chainId = chainId
   data.connected = true
   QRCodeModal.close()
-  $message.success('connect success')
+  ElMessage.success('connect success')
   console.log(data)
 })
 
 connector.on('session_update', (err, payload) => {
   if (err) {
     console.log('session_update err=', err)
-    $message.error('session_update err')
+    ElMessage.error('session_update err')
     return
   }
   const { accounts, chainId } = payload.params[0]
   data.accounts = accounts
   data.chainId = chainId
   data.connected = true
-  $message.success('session_update success')
+  ElMessage.success('session_update success')
   console.log(payload.params)
 })
 
@@ -60,10 +60,10 @@ connector.on('session_update', (err, payload) => {
 connector.on('disconnect', (err, payload) => {
   if (err) {
     console.log('disconnect err=', err, payload)
-    $message.error('disconnect err')
+    ElMessage.error('disconnect err')
     return
   } else {
-    $message.error(payload?.params?.[0]?.message)
+    ElMessage.error(payload?.params?.[0]?.message)
   }
   data.connected = false
 })
@@ -94,7 +94,7 @@ function sendTransaction() {
       console.log('sendTransaction res=', res)
     })
     .catch((err) => {
-      $message.error(err.message)
+      ElMessage.error(err.message)
       console.log("sendTransaction err=", err)
     })
 }
@@ -134,10 +134,10 @@ async function signTypedData() {
   }
   connector.sendCustomRequest(req).then(data => {
     console.log("signTypedData_v4 signature=", data)
-    $message.success("signTypedData_v4 success")
+    ElMessage.success("signTypedData_v4 success")
   }).catch(err => {
     console.log("walletconnect signTypedData_v4 err=", err)
-    $message.error(err.message)
+    ElMessage.error(err.message)
   })
 }
 
@@ -151,10 +151,10 @@ function personal_sign() {
   }
   connector.sendCustomRequest(req).then(data => {
     console.log("personal_sign signature=", data)
-    $message.success("personal_sign success")
+    ElMessage.success("personal_sign success")
   }).catch(err => {
     console.log("personal_sign err=", err)
-    $message.error("personal_sign fail," + err.message)
+    ElMessage.error("personal_sign fail," + err.message)
   })
 }
 
@@ -167,10 +167,10 @@ function eth_sign() {
   }
   connector.sendCustomRequest(req).then(data => {
     console.log("eth_sign signature=", data)
-    $message.success("personal_sign success")
+    ElMessage.success("personal_sign success")
   }).catch(err => {
     console.log("eth_sign err=", err)
-    $message.error("eth_sign fail," + err.message)
+    ElMessage.error("eth_sign fail," + err.message)
   })
 }
 
@@ -185,10 +185,10 @@ function eth_signTransaction() {
 
   connector.signTransaction(tx).then(signature => {
     console.log("eth_signTransaction signature=", signature)
-    $message.success("eth_signTransaction success")
+    ElMessage.success("eth_signTransaction success")
   }).catch(err => {
     console.log("eth_signTransaction err=", err)
-    $message.error("eth_signTransaction fail," + err.message)
+    ElMessage.error("eth_signTransaction fail," + err.message)
   })
 
   // const req = {
@@ -199,10 +199,10 @@ function eth_signTransaction() {
   // }
   // connector.sendCustomRequest(req).then(data => {
   //   console.log("eth_signTransaction signature=", data)
-  //   $message.success("eth_signTransaction success")
+  //   ElMessage.success("eth_signTransaction success")
   // }).catch(err => {
   //   console.log("eth_signTransaction err=", err)
-  //   $message.error("eth_signTransaction fail," + err.message)
+  //   ElMessage.error("eth_signTransaction fail," + err.message)
   // })
 }
 
@@ -215,10 +215,10 @@ function eth_sendRawTransaction() {
   }
   connector.sendCustomRequest(req).then(data => {
     console.log("eth_sendRawTransaction txHash=", data)
-    $message.success("eth_sendRawTransaction success")
+    ElMessage.success("eth_sendRawTransaction success")
   }).catch(err => {
     console.log("eth_sendRawTransaction err=", err)
-    $message.error("eth_sendRawTransaction fail," + err.message)
+    ElMessage.error("eth_sendRawTransaction fail," + err.message)
   })
 }
 
@@ -232,10 +232,10 @@ function wallet_switchEthereumChain() {
   }
   connector.sendCustomRequest(req).then(data => {
     console.log("wallet_switchEthereumChain success=", data)
-    $message.success("wallet_switchEthereumChain success")
+    ElMessage.success("wallet_switchEthereumChain success")
   }).catch(err => {
     console.log("wallet_switchEthereumChain err=", err)
-    $message.error("wallet_switchEthereumChain fail," + err.message)
+    ElMessage.error("wallet_switchEthereumChain fail," + err.message)
   })
 }
 
